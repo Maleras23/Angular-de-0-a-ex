@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { GifService } from 'src/app/gifs/services/gifs.service';
 
 interface MenuOption {
   label: string;
@@ -33,5 +34,8 @@ export class GifsSideMenuOptionsComponent {
       route: '/dashboard/search' ,
       icon: 'fa-solid fa-magnifying-glass',
     }
-  ]
+  ];
+
+  service = inject(GifService);
+
  }

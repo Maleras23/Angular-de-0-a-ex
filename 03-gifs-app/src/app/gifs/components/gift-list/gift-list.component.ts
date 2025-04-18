@@ -1,5 +1,6 @@
 import { Component, input } from '@angular/core';
 import { GisfListItemComponent } from "./gisf-list-item/gisf-list-item.component";
+import type { Gif } from '../../interfaces/gif.interface';
 
 @Component({
   selector: 'gift-list',
@@ -10,7 +11,7 @@ import { GisfListItemComponent } from "./gisf-list-item/gisf-list-item.component
 export class GiftListComponent {
 
   //TODO: imput string[];
-  gifs = input.required<string[]>();
+  gifs = input.required<Gif[]>();
 
 
 }
