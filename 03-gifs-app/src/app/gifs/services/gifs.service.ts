@@ -8,10 +8,8 @@ import { map, Observable, tap } from 'rxjs';
 
 // esta funcion es la que va a leer del localStorage
 const loadFromLocalStorage = () => {
-
   // esta linea es la que toma del localStorage
   const gifsFromLocalStorage = localStorage.getItem('gifs') ?? '{}';
-
   // esta linea transforma el string que resivimos del localStorage y lo combierte en un objeto
   const gifs = JSON.parse(gifsFromLocalStorage);
   return gifs;
@@ -23,7 +21,21 @@ export class GifService {
 
   // esta senal va a contener el estado de nuestros gifs
   trendingGifs = signal<Gif[]>([]);
-  trendingGifsLoading = signal(true);
+  trendingGifsLoading = signal(false);
+
+  // Esta senal contiene el numero de pagina en el que estamos
+  private trendingPage = signal(0);
+
+  // esta senal conputada realizara la creacion de un arreglo de arreglos para poder hacer el grid masonry
+  trendingGifGroup = computed<Gif[][]>(() => {
+    const groups = [];
+
+    for (let i = 0; i < this.trendingGifs().length; i += 3 ) {
+      const group = [this.trendingGifs()[0 + i], this.trendingGifs()[1+i], this.trendingGifs()[2 + i]];
+      groups.push(group);
+    }
+    return groups;
+  })
 
   // este es un objeto que que contendra el historial de busquedas
   // todo: necesito generar trendingGifs en el localStorage, se puede encontar en la seccion 5
@@ -33,21 +45,28 @@ export class GifService {
   searchHistoryKey = computed(() => Object.keys(this.searchHistory()))
 
   constructor(){
-    this.loadTrending();
+    this.loadTrendingGifs();
   }
 
   // este efecto esta destinado solo a grabar en el localStorage pero no a leer de el por lo que si refrescas el navegador igual pierdes la informacion, tienes que hacer otro effect que leea del localStorage
   saveGifsToLocalStorage = effect(() => {
+    // aqui vamos se pasa un objeto a string que es lo que se puede grabar en el Local storage
     const historyString = JSON.stringify(this.searchHistory());
+    // esta linea es la que graba en el local storage
     localStorage.setItem('gifs', historyString);
   })
 
   // este metodo realizara el llamado a la peticion http
-  loadTrending(){
+  loadTrendingGifs(){
+    if ( this.trendingGifsLoading() ) return;
+
+    this.trendingGifsLoading.set(true);
+
     this.http.get<GiphyResponse>(`${ environment.giphyUrl }/gifs/trending`,{
       params: {
         api_key: environment.giphyApikey,
-        limit: 20,
+        limit: 21,
+        offset: this.trendingPage() * 21
       }
     })
     // este subcribe se realiza para hacer la peticion http sin esto la peticion no se hace
@@ -55,9 +74,13 @@ export class GifService {
       // aqui resivimos la data y la convertimos a un arreglo segun nuestra interface, que es mucho mas facil de manejar
       const gifs = GifMapper.mapGiphyItemsToGifarray(resp.data);
       // Colocamos esa data en la senal que creamos para tal fin
-      this.trendingGifs.set(gifs);
+      this.trendingGifs.update(currentGifs => [
+        ...currentGifs,
+        ...gifs
+      ]);
+      this.trendingPage.update(currentPage => currentPage + 1);
+
       this.trendingGifsLoading.set(false);
-      console.log( { gifs });
     });
   }
 
