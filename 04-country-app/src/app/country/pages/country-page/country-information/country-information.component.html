@@ -1,0 +1,80 @@
+
+<section>
+  <div class="stats shadow">
+    <div class="stat">
+      <div class="stat-figure text-secondary">
+        <div class="avatar online">
+          <div class="w-16 rounded-full">
+            <img src="{{country().flagSvg}}" />
+          </div>
+        </div>
+      </div>
+      <div class="stat-value">{{ country().name }}</div>
+    <div class="stat-title">Tasks done</div>
+    <div class="stat-desc text-secondary">31 tasks remaining</div>
+  </div>
+
+  <div class="stat">
+    <div class="stat-figure text-primary">
+      <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      class="inline-block h-8 w-8 stroke-current">
+      <path
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+    </svg>
+    </div>
+    <div class="stat-title">Poblacion</div>
+    <div class="stat-value text-primary">{{ country().population | number }}</div>
+    <div class="stat-desc">21% more than last month</div>
+  </div>
+
+  <div class="stat">
+    <div class="stat-figure text-secondary">
+      <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      class="inline-block h-8 w-8 stroke-current">
+      <path
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+        </svg>
+      </div>
+      <div class="stat-title">Area</div>
+      <div class="stat-value text-secondary">{{ country().area | number}}</div>
+      <div class="stat-desc">21% more than last month</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  @for (country of country().borders; track $index) {
+    <ul class="list bg-base-100 rounded-box shadow-md">
+
+      <li class="p-4 pb-2 text-xs opacity-60 tracking-wide">Paises fronterizos</li>
+
+      <li class="list-row">
+        <div><img class="size-10 rounded-box" src="https://img.daisyui.com/images/profile/demo/1@94.webp"/></div>
+        <div>
+          <div>{{ country }}</div>
+          <div class="text-xs uppercase font-semibold opacity-60">Remaining Reason</div>
+        </div>
+        <button [routerLink]="['/country/by', country]" class="btn btn-square btn-ghost">
+          <svg class="size-[1.2em]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g stroke-linejoin="round" stroke-linecap="round" stroke-width="2" fill="none" stroke="currentColor"><path d="M6 3L20 12 6 21 6 3z"></path></g></svg>
+        </button>
+      </li>
+    </ul>
+
+  }
+</section>
+
+
+
+

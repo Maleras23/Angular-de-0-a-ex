@@ -12,7 +12,7 @@ export class GifMapper {
     };
   }
 
-  // este metodo tomara cada elemeto y usanda la funcion anterior combertira cada elemento y devolvera un arreglo de todos los elementos convertidos
+  // este metodo tomara cada elemeto y usando la funcion anterior combertira cada elemento y devolvera un arreglo de todos los elementos convertidos
   static mapGiphyItemsToGifarray(items: GiphyItem[]):Gif[]{
     return items.map(this.mapGiphyItemToGif);
   }
