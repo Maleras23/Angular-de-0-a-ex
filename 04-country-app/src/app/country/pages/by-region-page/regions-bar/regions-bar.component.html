@@ -1,0 +1,9 @@
+<section>
+  @for (item of regions ; track $index) {
+    <button
+      (click)="outValue.emit(item)"
+      (click)="selectedRegion.set(item)"
+      [class.btn-primary]="selectedRegion()===item"
+      class="btn btn-soft btn-info">{{item}}</button>
+  }
+</section>

@@ -7,11 +7,13 @@
     [placeholder]="placeholder()"
     autofocus
     #txtSearch
-    (keyup.enter)="onSearch(txtSearch.value)"
+    (keyup.enter)="value.emit(txtSearch.value)"
+    (keyup)="inputValue.set(txtSearch.value)"
+    [value]="inputValue()"
   />
 
   <button class="btn btn-primary"
-  (click)="onSearch(txtSearch.value)"
+  (click)="value.emit(txtSearch.value)"
 
 
   >Buscar</button>
