@@ -1,0 +1,11 @@
+<ul class="menu menu-horizontal bg-base-200 rouded-box my-2">
+  @for (route of routes; track route.path) {
+    <li>
+      <!-- el routerLink se coloca entre [] por que queremos que sea dinamico pero no es un atributo de los ancor tab -->
+      <a [routerLink]="route.path"
+          routerLinkActive="text-accent" >
+        {{route.title}}
+      </a>
+    </li>
+  }
+</ul>
