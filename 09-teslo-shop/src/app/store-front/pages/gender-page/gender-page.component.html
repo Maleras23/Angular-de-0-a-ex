@@ -14,8 +14,11 @@
 
   }
   <!-- Empty -->
-   @empty {
+  @empty {
     <p>No hay productos</p>
   }
 
 </div>
+
+<app-pagination [currentPage]="paginationService.currentpage()"
+[pages]="productsResource.value()?.pages ?? 0"/>

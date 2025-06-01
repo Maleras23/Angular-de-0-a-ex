@@ -1,20 +1,22 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject} from '@angular/core';
 import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
-import { Options, ProductsService } from '@products/services/products.service';
+import { ProductsService } from '@products/services/products.service';
 import { map } from 'rxjs';
 import { ProductCardComponent } from "../../../products/components/product-card/product-card.component";
-import { AsyncPipe, I18nPluralPipe } from '@angular/common';
+import { PaginationComponent } from "../../../shared/components/pagination/pagination.component";
+import { PaginationService } from '../../../shared/components/pagination/pagination.service';
 
 @Component({
   selector: 'app-gender-page',
-  imports: [ProductCardComponent],
+  imports: [ProductCardComponent, PaginationComponent],
   templateUrl: './gender-page.component.html',
 })
 export class GenderPageComponent {
 
   router = inject(ActivatedRoute);
   productsService = inject(ProductsService);
+  paginationService = inject(PaginationService);
 
   gender = toSignal(
     this.router.params.pipe(
@@ -23,10 +25,11 @@ export class GenderPageComponent {
   )
 
   productsResource = rxResource({
-    request: () => ({ gender : this.gender()}),
+    request: () => ({ gender : this.gender(), pages :this.paginationService.currentpage() - 1}),
     loader:({request}) => {
       return this.productsService.getProducts({
         gender: request.gender,
+        offset: request.pages * 9
       });
     },
   })
