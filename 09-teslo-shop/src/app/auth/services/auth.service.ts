@@ -39,6 +39,7 @@ export class AuthService {
 
   user = computed<User|null>(() => this._user());
   token = computed(this._token);
+  isAdmin = computed( () => this._user()?.roles.includes('admin') ?? false)
 
   // aqui vamos hacer la peticion http
   login(email:string, password: string):Observable<boolean>{
@@ -74,9 +75,7 @@ export class AuthService {
     return false
   }
 
-
   checkStatus():Observable<boolean>{
-
     const token = localStorage.getItem('token');
     if (!token){
       this.logout();
@@ -84,7 +83,6 @@ export class AuthService {
     }
 
     return this.http.get<AuthResponse>(`${ baseURL }/auth/check-status`,{
-
         // headers: {
         //   Authorization:`Bearer ${token}`,
         // },
