@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, input, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, OnInit, signal } from '@angular/core';
 import { Product } from '@products/interfaces/product.interface';
 import { ProductCarouselComponent } from "../../../../products/components/product-carousel/product-carousel.component";
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -7,6 +7,7 @@ import { FormErrorLabelComponent } from "../../../../shared/components/form-erro
 import { ProductsService } from '../../../../products/services/products.service';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
+
 
 
 @Component({
@@ -23,6 +24,15 @@ export class ProductDetailsComponent implements OnInit {
 
   productsService = inject(ProductsService);
   wasSaved = signal(false);
+
+  imageFileList: FileList|undefined = undefined;
+  tempImages = signal<string[]>([])
+
+  imagesToCarousel = computed(() =>{
+    const currentProductImages = [... this.product().images, ... this.tempImages()];
+
+    return currentProductImages;
+  })
 
   productForm = this.fb.group({
     title: ['', Validators.required],
@@ -72,20 +82,20 @@ export class ProductDetailsComponent implements OnInit {
     const productLike: Partial<Product>= {
       ...(formValue as any),
       tags: formValue.tags
-        ?.toLowerCase()
-        .split(',').map( tag => tag.trim() ) ?? [],
+      ?.toLowerCase()
+      .split(',').map( tag => tag.trim() ) ?? [],
     };
 
     if (this.product().id === 'new'){
       // crear producto
       const product = await firstValueFrom(
-        this.productsService.createProduct(productLike)
+        this.productsService.createProduct(productLike, this.imageFileList)
       )
       this.router.navigate(['/admin/products', product.id ]);
     } else {
       await firstValueFrom(
-      this.productsService.updateProduct(this.product().id, productLike)
-    );
+        this.productsService.updateProduct(this.product().id, productLike, this.imageFileList)
+      );
     }
 
     this.wasSaved.set(true);
@@ -93,4 +103,25 @@ export class ProductDetailsComponent implements OnInit {
       this.wasSaved.set(false)
     }, 3000)
   }
- }
+
+  // imagenes
+  onFilesChanged( event: Event) {
+  const fileList = ( event.target as HTMLInputElement).files;
+  this.tempImages.set([]);
+  this.imageFileList = fileList ?? undefined;
+
+  const imageUrls = Array.from( fileList ?? [] ).map((file => URL.createObjectURL(file))
+  );
+
+  this.tempImages.set(imageUrls);
+
+  // console.log(this.tempImages()[0].slice(0,4))
+  // const check = this.tempImages()[0].slice(0,4)
+
+  // if (this.tempImages()[0].slice(0,4) === 'blob' ){
+  //   console.log(this.tempImages()[0].slice(0,4))
+  // }
+
+
+  }
+}
